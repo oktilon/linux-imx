@@ -7,9 +7,6 @@
 #include "imx8qxp-var-som.dtsi"
 
 / {
-	aliases {
-		gpio8 = &pca9534;
-	};
 
 	chosen {
 		stdout-path = &lpuart3;
@@ -17,7 +14,7 @@
 
 	backlight: backlight {
 		compatible = "pwm-backlight";
-		pwms = <&pwm_mipi_lvds0 0 100000 0>;
+		pwms = <&pwm_mipi_lvds0 0 5000000 0>;
 
 		brightness-levels = < 0  1  2  3  4  5  6  7  8  9
 				     10 11 12 13 14 15 16 17 18 19
@@ -34,41 +31,6 @@
 		status = "okay";
 	};
 
-	gpio-keys {
-		compatible = "gpio-keys";
-		status = "okay";
-
-		back {
-			label = "Back";
-			gpios = <&pca9534 1 GPIO_ACTIVE_LOW>;
-			wakeup-source;
-			linux,code = <KEY_BACK>;
-		};
-
-		home {
-			label = "Home";
-			gpios = <&pca9534 2 GPIO_ACTIVE_LOW>;
-			wakeup-source;
-			linux,code = <KEY_HOME>;
-		};
-
-		menu {
-			label = "Menu";
-			gpios = <&pca9534 3 GPIO_ACTIVE_LOW>;
-			wakeup-source;
-			linux,code = <KEY_MENU>;
-		};
-	};
-
-	leds {
-		compatible = "gpio-leds";
-
-		heartbeat {
-			label = "heartbeat";
-			gpios = <&pca9534 0 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "heartbeat";
-		};
-	};
 
 	lvds_panel {
 		compatible = "sgd,gktw70sdae4se", "panel-lvds";
@@ -80,15 +42,15 @@
 		status = "okay";
 
 		panel-timing {
-			clock-frequency = <29232000>;
-			hactive = <800>;
-			vactive = <480>;
-			hback-porch = <40>;
-			hfront-porch = <40>;
-			vback-porch = <29>;
-			vfront-porch = <13>;
-			hsync-len = <48>;
-			vsync-len = <3>;
+			clock-frequency = <69660000>;
+			hactive = <1280>;
+			vactive = <800>;
+			hback-porch = <50>;
+			hfront-porch = <20>;
+			vback-porch = <40>;
+			vfront-porch = <20>;
+			hsync-len = <10>;
+			vsync-len = <10>;
 			hsync-active = <0>;
 			vsync-active = <0>;
 			de-active = <1>;
@@ -106,27 +68,6 @@
 		compatible = "simple-bus";
 		#address-cells = <1>;
 		#size-cells = <0>;
-
-		reg_phy1_pwr: regulator-phy1-pwr {
-			compatible = "regulator-fixed";
-			vin-supply = <&reg_phy1_vsel>;
-			regulator-name = "phy1_supply";
-			regulator-min-microvolt = <1800000>;
-			regulator-max-microvolt = <1800000>;
-			gpio = <&pca9534 7 GPIO_ACTIVE_HIGH>;
-			enable-active-high;
-			regulator-always-on;
-		};
-
-		reg_phy1_vsel: regulator-phy1-vsel {
-			compatible = "regulator-fixed";
-			regulator-name = "phy1_vsel";
-			regulator-min-microvolt = <3300000>;
-			regulator-max-microvolt = <3300000>;
-			regulator-always-on;
-			gpio = <&pca9534 6 GPIO_ACTIVE_HIGH>;
-			enable-active-high;
-		};
 
 		reg_usb_otg1_vbus: regulator-usb-otg1-vbus {
 			compatible = "regulator-fixed";
@@ -147,11 +88,6 @@
 			enable-active-high;
 		};
 	};
-};
-
-&cameradev {
-	parallel_csi;
-	status = "okay";
 };
 
 &cm40_intmux {
@@ -227,36 +163,6 @@
 	status = "okay";
 };
 
-&fec1 {
-	mdio {
-		ethphy1: ethernet-phy@5 {
-			compatible = "ethernet-phy-ieee802.3-c22";
-			reg = <5>;
-			qca,disable-smarteee;
-			vddio-supply = <&vddio1>;
-			adi,phy-mode-override = "rgmii";
-			reset-gpios = <&pca9534 5 GPIO_ACTIVE_LOW>;
-			reset-assert-us = <10000>;
-			reset-deassert-us = <20000>;
-
-			vddio1: vddio-regulator {
-				regulator-min-microvolt = <1800000>;
-				regulator-max-microvolt = <1800000>;
-			};
-		};
-	};
-};
-
-&fec2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_fec2>;
-	phy-mode = "rgmii-rxid";
-	phy-handle = <&ethphy1>;
-	fsl,magic-packet;
-	status = "okay";
-	phy-supply = <&reg_phy1_pwr>;
-};
-
 &flexcan3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan3>;
@@ -298,25 +204,6 @@
 		};
 	};
 
-	/* GPIO expander */
-	pca9534:gpio@20 {
-		compatible = "nxp,pca9534";
-		reg = <0x20>;
-		gpio-controller;
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_pca9534>;
-		interrupt-parent = <&lsio_gpio3>;
-		interrupts = <4 IRQ_TYPE_EDGE_FALLING>;
-		#gpio-cells = <2>;
-
-		usb3_sel_hog {
-			gpio-hog;
-			gpios = <4 0>;
-			output-low;
-			line-name = "usb3_sel";
-		};
-	};
-
 	/* USB-C controller */
 	typec_ptn5150: typec@3d {
 		status = "okay";
@@ -343,28 +230,6 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lpi2c2>;
 	status = "okay";
-
-	/* Capacitive touch controller */
-	ft5x06_ts: ft5x06_ts@38 {
-		status = "okay";
-		compatible = "edt,edt-ft5406";
-		reg = <0x38>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_captouch>;
-		interrupt-parent = <&lsio_gpio0>;
-		interrupts = <24 0>;
-		touchscreen-size-x = <800>;
-		touchscreen-size-y = <480>;
-		touchscreen-inverted-x;
-		touchscreen-inverted-y;
-	};
-
-	/* DS1337 RTC module */
-	rtc@68 {
-		status = "okay";
-		compatible = "dallas,ds1337";
-		reg = <0x68>;
-	};
 };
 
 &i2c3 {
@@ -402,33 +267,21 @@
 			};
 		};
 	};
+
+
+	/* Light sensor */
+	sfh7771: sfh7771@38 {
+		compatible = "osram,sfh7771";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_sfh7771>;
+		reg = <0x38>;
+		interrupt-parent = <&lsio_gpio3>;
+		interrupts = <24 IRQ_TYPE_EDGE_FALLING>;
+		status = "okay";
+	};
 };
 
 &iomuxc {
-	pinctrl_captouch: captouchgrp {
-		fsl,pins = <
-			IMX8QXP_UART1_CTS_B_LSIO_GPIO0_IO24			0xC0000041
-			/* Workaround for capacitive touch problem on Symphony board 1.1 */
-			IMX8QXP_UART1_RTS_B_LSIO_GPT1_CAPTURE			0x06000020
-		>;
-	};
-
-	pinctrl_fec2: fec2grp {
-		fsl,pins = <
-			IMX8QXP_ESAI0_SCKR_CONN_ENET1_RGMII_TX_CTL		0x00000060
-			IMX8QXP_ESAI0_FSR_CONN_ENET1_RGMII_TXC			0x00000060
-			IMX8QXP_ESAI0_TX4_RX1_CONN_ENET1_RGMII_TXD0		0x00000060
-			IMX8QXP_ESAI0_TX5_RX0_CONN_ENET1_RGMII_TXD1		0x00000060
-			IMX8QXP_ESAI0_FST_CONN_ENET1_RGMII_TXD2			0x00000060
-			IMX8QXP_ESAI0_SCKT_CONN_ENET1_RGMII_TXD3		0x00000060
-			IMX8QXP_ESAI0_TX0_CONN_ENET1_RGMII_RXC			0x00000060
-			IMX8QXP_SPDIF0_TX_CONN_ENET1_RGMII_RX_CTL		0x00000060
-			IMX8QXP_SPDIF0_RX_CONN_ENET1_RGMII_RXD0			0x00000060
-			IMX8QXP_ESAI0_TX3_RX2_CONN_ENET1_RGMII_RXD1		0x00000060
-			IMX8QXP_ESAI0_TX2_RX3_CONN_ENET1_RGMII_RXD2		0x00000060
-			IMX8QXP_ESAI0_TX1_CONN_ENET1_RGMII_RXD3			0x00000060
-		>;
-	};
 
 	pinctrl_flexcan3: flexcan3grp {
 		fsl,pins = <
@@ -455,6 +308,12 @@
 		fsl,pins = <
 			IMX8QXP_SPI3_CS1_ADMA_I2C3_SCL				0x06000021
 			IMX8QXP_MCLK_IN1_ADMA_I2C3_SDA				0x06000021
+		>;
+	};
+
+	pinctrl_sfh7771: sfh7771grp {
+		fsl,pins = <
+			IMX8QXP_QSPI0B_SS1_B_LSIO_GPIO3_IO24		0x06000021
 		>;
 	};
 
@@ -490,7 +349,6 @@
 
 	pinctrl_mipi_csi0: mipicsi0grp {
 		fsl,pins = <
-			IMX8QXP_QSPI0B_SS1_B_LSIO_GPIO3_IO24			0xC0000041
 			IMX8QXP_SPDIF0_EXT_CLK_LSIO_GPIO0_IO12			0xC0000041
 			IMX8QXP_SAI0_TXC_LSIO_GPIO0_IO26			0xC0000041
 		>;
@@ -507,23 +365,10 @@
 			IMX8QXP_CSI_D06_CI_PI_D08				0xC0000041
 			IMX8QXP_CSI_D07_CI_PI_D09				0xC0000041
 
-			IMX8QXP_CSI_PCLK_CI_PI_PCLK				0xC0000041
 			IMX8QXP_CSI_HSYNC_CI_PI_HSYNC				0xC0000041
 			IMX8QXP_CSI_VSYNC_CI_PI_VSYNC				0xC0000041
 			IMX8QXP_CSI_EN_LSIO_GPIO3_IO02				0xC0000041
 			IMX8QXP_CSI_RESET_LSIO_GPIO3_IO03			0xC0000041
-		>;
-	};
-
-	pinctrl_pca9534: pca9534grp {
-		fsl,pins = <
-			IMX8QXP_MIPI_CSI0_MCLK_OUT_LSIO_GPIO3_IO04		0xC0000041
-		>;
-	};
-
-	pinctrl_pcieb: pciebgrp {
-		fsl,pins = <
-			IMX8QXP_SAI1_RXD_LSIO_GPIO0_IO29			0x60000021
 		>;
 	};
 
@@ -541,7 +386,8 @@
 
 	pinctrl_usb1otg: usb1otggrp {
 		fsl,pins = <
-			IMX8QXP_USDHC1_WP_LSIO_GPIO4_IO21			0xC0000041
+			/* IMX8QXP_USDHC1_WP_LSIO_GPIO4_IO21			0xC0000041 */ /* Need this for IR-LED-EN,
+																* but must leave pinctrl definition*/
 		>;
 	};
 };
@@ -599,7 +445,7 @@
 &ldb1 {
 	status = "okay";
 	lvds-channel@0 {
-		fsl,data-mapping = "jeida";
+		fsl,data-mapping = "spwg";
 		fsl,data-width = <24>;
 		status = "okay";
 
@@ -675,30 +521,27 @@
 	 * 24:                    Touch IRQ gpio pin
 	 */
 	pad-wakeup = <IMX8QXP_UART1_CTS_B SC_PAD_WAKEUP_LOW_LVL 24>;
+
+	lvds_en_hog {
+		gpio-hog;
+		gpios = <6 0>;
+		output-high;
+		line-name = "lvds_pwr_en";
+	};
 };
 
 &lsio_gpio3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_mipi_csi0>;
-
-	cam_buf_hog {
-		gpio-hog;
-		gpios = <24 0>;
-		output-high;
-		line-name = "cam_buf_en";
-	};
 };
 
-&lsio_gpio3 {
-	/* Enable wakeup-source from all pca9534 gpio-keys*/
-	pad-wakeup-num = <1>;	/* Total number of wakeup pads in gpio1 bank */
-
-	/*
-	 * IMX8QXP_MIPI_CSI0_MCLK_OUT: PCA9534 IRQ pin id
-	 * SC_PAD_WAKEUP_LOW_LVL:      trigger type
-	 * 4:                          PCA9534 IRQ gpio pin
-	 */
-	pad-wakeup = <IMX8QXP_MIPI_CSI0_MCLK_OUT SC_PAD_WAKEUP_LOW_LVL 4>;
+&lsio_gpio4 {
+	ir_pwmchip_en {
+		gpio-hog;
+		gpios = <21 0>;
+		output-high;
+		line-name = "ir_pwmchip_en";
+	};
 };
 
 &mipi_csi_0 {
@@ -724,13 +567,6 @@
 			remote-endpoint = <&ov5640_ep>;
 		};
 	};
-};
-
-&pcieb{
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_pcieb>;
-	reset-gpio = <&lsio_gpio0 29 GPIO_ACTIVE_LOW>;
-	status = "okay";
 };
 
 &phyx1 {
@@ -775,7 +611,7 @@
 };
 
 &usbotg3_cdns3 {
-	dr_mode = "otg";
+	dr_mode = "host";
 	usb-role-switch;
 	status = "okay";
 

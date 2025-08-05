@@ -186,6 +186,12 @@
 		fsl,pins = <
 			IMX8QXP_MCLK_OUT0_ADMA_ACM_MCLK_OUT0			0x0600004c
 			IMX8QXP_COMP_CTL_GPIO_1V8_3V3_GPIORHB_PAD		0x000514a0
+			IMX8QXP_ESAI0_SCKT_LSIO_GPIO0_IO03				0x00000021 /* Quectel reset */
+			IMX8QXP_ESAI0_TX0_LSIO_GPIO0_IO04				0x00000021 /* Quectel power */
+			IMX8QXP_ESAI0_TX1_LSIO_GPIO0_IO05				0x00000021 /* Quectel sim select */
+			IMX8QXP_ESAI0_TX2_RX3_LSIO_GPIO0_IO06			0xC0000041 /* LVDS enable */
+			IMX8QXP_USDHC1_WP_LSIO_GPIO4_IO21				0x00000021 /* IR-led PWM-chip enable  */
+			IMX8QXP_CSI_PCLK_LSIO_GPIO3_IO00				0x00000021 /* IR PWM signal */
 		>;
 	};
 
@@ -245,11 +251,11 @@
 		>;
 	};
 
-	pinctrl_restouch: restouchgrp {
+	/* pinctrl_restouch: restouchgrp {
 		fsl,pins = <
 			IMX8QXP_USDHC1_RESET_B_LSIO_GPIO4_IO19			0xC0000041
 		>;
-	};
+	}; */
 
 	pinctrl_sai1: sai1grp {
 		fsl,pins = <
@@ -319,34 +325,34 @@
 
 	pinctrl_usdhc2: usdhc2grp {
 		fsl,pins = <
-			IMX8QXP_USDHC1_CLK_CONN_USDHC1_CLK			0x06000041
-			IMX8QXP_USDHC1_CMD_CONN_USDHC1_CMD			0x00000021
-			IMX8QXP_USDHC1_DATA0_CONN_USDHC1_DATA0			0x00000021
-			IMX8QXP_USDHC1_DATA1_CONN_USDHC1_DATA1			0x00000021
-			IMX8QXP_USDHC1_DATA2_CONN_USDHC1_DATA2			0x00000021
-			IMX8QXP_USDHC1_DATA3_CONN_USDHC1_DATA3			0x00000021
+			IMX8QXP_USDHC1_CLK_CONN_USDHC1_CLK			0x06000040
+			IMX8QXP_USDHC1_CMD_CONN_USDHC1_CMD			0x00000020
+			IMX8QXP_USDHC1_DATA0_CONN_USDHC1_DATA0			0x00000020
+			IMX8QXP_USDHC1_DATA1_CONN_USDHC1_DATA1			0x00000020
+			IMX8QXP_USDHC1_DATA2_CONN_USDHC1_DATA2			0x00000020
+			IMX8QXP_USDHC1_DATA3_CONN_USDHC1_DATA3			0x00000020
 		>;
 	};
 
 	pinctrl_usdhc2_100mhz: usdhc2grp100mhz {
 		fsl,pins = <
-			IMX8QXP_USDHC1_CLK_CONN_USDHC1_CLK			0x06000041
-			IMX8QXP_USDHC1_CMD_CONN_USDHC1_CMD			0x00000021
-			IMX8QXP_USDHC1_DATA0_CONN_USDHC1_DATA0			0x00000021
-			IMX8QXP_USDHC1_DATA1_CONN_USDHC1_DATA1			0x00000021
-			IMX8QXP_USDHC1_DATA2_CONN_USDHC1_DATA2			0x00000021
-			IMX8QXP_USDHC1_DATA3_CONN_USDHC1_DATA3			0x00000021
+			IMX8QXP_USDHC1_CLK_CONN_USDHC1_CLK			0x06000040
+			IMX8QXP_USDHC1_CMD_CONN_USDHC1_CMD			0x00000020
+			IMX8QXP_USDHC1_DATA0_CONN_USDHC1_DATA0			0x00000020
+			IMX8QXP_USDHC1_DATA1_CONN_USDHC1_DATA1			0x00000020
+			IMX8QXP_USDHC1_DATA2_CONN_USDHC1_DATA2			0x00000020
+			IMX8QXP_USDHC1_DATA3_CONN_USDHC1_DATA3			0x00000020
 		>;
 	};
 
 	pinctrl_usdhc2_200mhz: usdhc2grp200mhz {
 		fsl,pins = <
-			IMX8QXP_USDHC1_CLK_CONN_USDHC1_CLK			0x06000041
-			IMX8QXP_USDHC1_CMD_CONN_USDHC1_CMD			0x00000021
-			IMX8QXP_USDHC1_DATA0_CONN_USDHC1_DATA0			0x00000021
-			IMX8QXP_USDHC1_DATA1_CONN_USDHC1_DATA1			0x00000021
-			IMX8QXP_USDHC1_DATA2_CONN_USDHC1_DATA2			0x00000021
-			IMX8QXP_USDHC1_DATA3_CONN_USDHC1_DATA3			0x00000021
+			IMX8QXP_USDHC1_CLK_CONN_USDHC1_CLK			0x06000040
+			IMX8QXP_USDHC1_CMD_CONN_USDHC1_CMD			0x00000020
+			IMX8QXP_USDHC1_DATA0_CONN_USDHC1_DATA0			0x00000020
+			IMX8QXP_USDHC1_DATA1_CONN_USDHC1_DATA1			0x00000020
+			IMX8QXP_USDHC1_DATA2_CONN_USDHC1_DATA2			0x00000020
+			IMX8QXP_USDHC1_DATA3_CONN_USDHC1_DATA3			0x00000020
 		>;
 	};
 
@@ -398,49 +404,6 @@
 			0xffff /* GPIO3 => don't touch */
 			0xffff /* GPIO4 => don't touch */
 		>;
-		status = "okay";
-	};
-};
-
-/* Bluetooth */
-&lpuart0 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_lpuart0>, <&pinctrl_bt>;
-	dma-names = "tx","rx";
-	dmas = <&edma2 9 0 0>,
-		<&edma2 8 0 1>;
-	status = "disabled";
-};
-
-&lpspi3 {
-	#address-cells = <1>;
-	#size-cells = <0>;
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_lpspi3>;
-	cs-gpios = <&lsio_gpio0 16 GPIO_ACTIVE_LOW>;
-	status = "okay";
-
-	/* Resistive touch controller */
-	ads7846@0 {
-		reg = <0>;
-		compatible = "ti,ads7846";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_restouch>;
-		interrupt-parent = <&lsio_gpio4>;
-		interrupts = <19 IRQ_TYPE_EDGE_FALLING>;
-		spi-max-frequency = <1500000>;
-		pendown-gpio = <&lsio_gpio4 19 GPIO_ACTIVE_LOW>;
-		ti,x-min = /bits/ 16 <125>;
-		ti,x-max = /bits/ 16 <4008>;
-		ti,y-min = /bits/ 16 <282>;
-		ti,y-max = /bits/ 16 <3864>;
-		ti,x-plate-ohms = /bits/ 16 <180>;
-		ti,pressure-max = /bits/ 16 <255>;
-		ti,debounce-max = /bits/ 16 <10>;
-		ti,debounce-tol = /bits/ 16 <3>;
-		ti,debounce-rep = /bits/ 16 <1>;
-		ti,settle-delay-usec = /bits/ 16 <150>;
-		ti,keep-vref-on;
 		status = "okay";
 	};
 };
