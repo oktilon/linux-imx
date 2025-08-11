@@ -714,17 +714,14 @@ __err:
 	return;
 }
 
-static int sfh7771_remove(struct i2c_client *client)
+static void sfh7771_remove(struct i2c_client *client)
 {
 	struct sfh7771_chip *chip = i2c_get_clientdata(client);
 
 	sfh7771_chip_off(chip);
-
-	return 0;
 }
 
-static int sfh7771_probe(struct i2c_client *client,
-				const struct i2c_device_id *id)
+static int sfh7771_probe(struct i2c_client *client)
 {
 	struct sfh7771_chip *chip;
 	int err;
