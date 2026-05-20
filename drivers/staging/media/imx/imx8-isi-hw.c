@@ -80,7 +80,7 @@ void dump_isi_regs(struct mxc_isi_dev *mxc_isi)
 }
 #endif
 
-/* 
+/*
  * A2,A1,      B1, A3,     B3, B2,
  * C2, C1,     D1, C3,     D3, D2
  */
@@ -464,7 +464,8 @@ void mxc_isi_channel_set_crop(struct mxc_isi_dev *mxc_isi,
 	val &= ~CHNL_IMG_CTRL_CROP_EN_MASK;
 
 	if ((dst_f->o_height == dst_f->c_height) &&
-	    (dst_f->o_width == dst_f->c_width)) {
+	    (dst_f->o_width == dst_f->c_width) &&
+		!dst_f->h_off && !dst_f->v_off) {
 		mxc_isi->crop = 0;
 		writel(val, mxc_isi->regs + CHNL_IMG_CTRL);
 		return;
