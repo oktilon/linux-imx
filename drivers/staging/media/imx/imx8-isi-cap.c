@@ -942,7 +942,7 @@ static int mxc_isi_source_fmt_init(struct mxc_isi_cap_dev *isi_cap)
 {
 	struct mxc_isi_frame *src_f = &isi_cap->src_f;
 	struct mxc_isi_frame *dst_f = &isi_cap->dst_f;
-	struct v4l2_subdev_format src_fmt;
+	struct v4l2_subdev_format src_fmt = { 0 };
 	struct media_pad *source_pad;
 	struct v4l2_subdev *src_sd;
 	int ret;
